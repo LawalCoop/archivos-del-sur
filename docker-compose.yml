@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 
 services:
   db:
@@ -16,7 +16,9 @@ services:
     image: phpmyadmin/phpmyadmin
     restart: always
     links:
-     - db:db
+      - db:db
+    environment:
+      UPLOAD_LIMIT: 300M
     ports:
       - "8080:80"
 
