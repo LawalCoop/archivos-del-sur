@@ -1,0 +1,23 @@
+{
+	# Opcional: e-mail para avisos de certificados de Let's Encrypt
+	email infra@lawal.coop
+	# Logs más verbosos si estás debuggeando
+	# debug
+}
+
+# Redirigir www → apex
+www.archivosdelsur.ar {
+	redir https://archivosdelsur.ar{uri}
+}
+
+archivosdelsur.ar {
+	encode zstd gzip
+	# Cabeceras útiles; opcionales
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+	# Reverse proxy al Apache/PHP dentro del contenedor omeka
+	reverse_proxy omeka:80
+}

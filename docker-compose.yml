@@ -3,64 +3,49 @@ version: "2"
 services:
   db:
     image: mysql:5.7
-    volumes:
-      - mysql-data:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: omeka
       MYSQL_DATABASE: omeka
       MYSQL_USER: omeka
       MYSQL_PASSWORD: omeka
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   db_admin:
     image: phpmyadmin/phpmyadmin
     restart: always
-    links:
-      - db:db
     environment:
+      PMA_HOST: db
+      PMA_USER: omeka
+      PMA_PASSWORD: omeka
       UPLOAD_LIMIT: 300M
     ports:
       - "8080:80"
 
   omeka:
-    depends_on:
-      - db
-      - traefik
+    # tu Dockerfile actual
     build: ./
-    volumes:
-      - omeka-files:/var/www/html/files
     image: omeka
     restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.omeka.rule=Host(`archivosdelsur.ar`)"
-      - "traefik.http.routers.omeka.entrypoints=websecure"
-      - "traefik.http.routers.omeka.tls.certresolver=myresolver"
-      - "traefik.http.routers.omeka-redirect.entrypoints=web"
-      - "traefik.http.routers.omeka-redirect.rule=Host(`archivosdelsur.ar`)"
-      - "traefik.http.routers.omeka-redirect.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+    depends_on:
+      - db
+    # sin puertos hacia afuera: sólo expone internamente
+    volumes:
+      - omeka-files:/var/www/html/files
 
-  traefik:
-    image: "traefik:v2.10"
-    container_name: "traefik"
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=infra@lawal.coop"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+  caddy:
+    image: caddy:2
+    restart: always
+    depends_on:
+      - omeka
     ports:
       - "80:80"
       - "443:443"
-      - "8082:8080"
     volumes:
-      - "./letsencrypt:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy-data:/data
+      - ./caddy-config:/config
 
 volumes:
   mysql-data:
