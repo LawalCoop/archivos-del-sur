@@ -38,6 +38,10 @@ RUN curl -J -L -s -k \
 &&  mv /var/www/html/themes/theme-curatescape-echo-2.0.7/curatescape-echo /var/www/html/themes/curatescape-echo \
 &&  rm /var/www/theme-curatescape-echo.zip
 
+# Upstream theme (as of 2.0.7) only ships a de_DE translation catalog; add the
+# missing es_ES one so the public-facing site is fully translated to Spanish.
+COPY ./translations/curatescape-echo/es_ES.po ./translations/curatescape-echo/es_ES.mo /var/www/html/themes/curatescape-echo/languages/
+
 # Curatescape 2.0+ themes require the standalone Curatescape plugin, which as of
 # 1.0.x absorbs CuratescapeJSON, CuratescapeAdminHelper, TourBuilder and SuperRss
 # (installing those alongside it causes the plugin to flag them as deprecated/conflicting)
