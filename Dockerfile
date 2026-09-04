@@ -36,11 +36,14 @@ RUN curl -J -L -s -k \
     -o /var/www/theme-curatescape-echo.zip \
 &&  unzip -q /var/www/theme-curatescape-echo.zip -d /var/www/html/themes/ \
 &&  mv /var/www/html/themes/theme-curatescape-echo-2.0.7/curatescape-echo /var/www/html/themes/curatescape-echo \
-&&  rm /var/www/theme-curatescape-echo.zip
+&&  rm -rf /var/www/theme-curatescape-echo.zip /var/www/html/themes/theme-curatescape-echo-2.0.7
 
-# Upstream theme (as of 2.0.7) only ships a de_DE translation catalog; add the
-# missing es_ES one so the public-facing site is fully translated to Spanish.
-COPY ./translations/curatescape-echo/es_ES.po ./translations/curatescape-echo/es_ES.mo /var/www/html/themes/curatescape-echo/languages/
+# Upstream theme (as of 2.0.7) only ships a de_DE translation catalog; add
+# Spanish so the public-facing site is fully translated. This site's Omeka
+# locale is "es" (Omeka core only ships es.mo/es_CO.mo, not es_ES.mo), so the
+# catalog filename must be es.mo for add_translation_source() to find it; the
+# es_ES.mo copy is kept too in case the locale is ever switched to es_ES.
+COPY ./translations/curatescape-echo/es.po ./translations/curatescape-echo/es.mo ./translations/curatescape-echo/es_ES.po ./translations/curatescape-echo/es_ES.mo /var/www/html/themes/curatescape-echo/languages/
 
 # Curatescape 2.0+ themes require the standalone Curatescape plugin, which as of
 # 1.0.x absorbs CuratescapeJSON, CuratescapeAdminHelper, TourBuilder and SuperRss
@@ -51,6 +54,10 @@ RUN curl -J -L -s -k \
 &&  unzip -q /var/www/Curatescape.zip -d /var/www/html/plugins/ \
 &&  mv /var/www/html/plugins/Curatescape-1.0.12 /var/www/html/plugins/Curatescape \
 &&  rm /var/www/Curatescape.zip
+
+# Same locale-filename gap as the theme above: the plugin ships es_ES.mo but
+# this site's Omeka locale is "es", so add an es.mo copy of the same catalog.
+COPY ./translations/curatescape-plugin/es.po ./translations/curatescape-plugin/es.mo /var/www/html/plugins/Curatescape/languages/
 
 RUN curl -J -L -s -k \
     'https://github.com/omeka/plugin-Geolocation/archive/refs/heads/master.zip' \
@@ -78,6 +85,7 @@ RUN curl -J -L -s -k \
 RUN  chown -R www-data:www-data /var/www/html
 
 COPY ./db.ini /var/www/html/db.ini
+COPY ./config.ini /var/www/html/application/config/config.ini
 COPY ./.htaccess /var/www/html/.htaccess
 COPY ./imagemagick-policy.xml /etc/ImageMagick/policy.xml
 
