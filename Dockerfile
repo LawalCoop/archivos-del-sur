@@ -77,6 +77,10 @@ COPY ./db.ini /var/www/html/db.ini
 COPY ./.htaccess /var/www/html/.htaccess
 COPY ./imagemagick-policy.xml /etc/ImageMagick/policy.xml
 
+COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 VOLUME /var/www/html
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
