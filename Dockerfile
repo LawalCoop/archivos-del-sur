@@ -3,6 +3,7 @@ FROM php:7.1-apache
 RUN a2enmod rewrite
 
 ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     curl \
     unzip \
@@ -24,7 +25,7 @@ RUN docker-php-ext-install exif && \
     docker-php-ext-enable exif
 
 RUN curl -J -L -s -k \
-    'https://github.com/omeka/Omeka/releases/download/v3.0.1/omeka-3.0.1.zip' \
+    'https://github.com/omeka/Omeka/releases/download/v3.2.1/omeka-3.2.1.zip' \
     -o /var/www/omeka.zip \
 &&  unzip -q /var/www/omeka.zip -d /var/www/ \
 &&  rm /var/www/omeka.zip \
@@ -67,10 +68,10 @@ RUN curl -J -L -s -k \
 &&  rm /var/www/plugin-Geolocation-master.zip
 
 RUN curl -J -L -s -k \
-    'https://github.com/omeka/plugin-SimplePages/releases/download/v3.1.2/SimplePages-3.1.2.zip' \
-    -o /var/www/SimplePages-3.1.2.zip \
-&&  unzip -o -q /var/www/SimplePages-3.1.2.zip -d /var/www/html/plugins/ \
-&&  rm /var/www/SimplePages-3.1.2.zip
+    'https://github.com/omeka/plugin-SimplePages/archive/refs/heads/master.zip' \
+    -o /var/www/plugin-SimplePages-master.zip \
+&&  unzip -o -q /var/www/plugin-SimplePages-master.zip -d /var/www/html/plugins/ \
+&&  rm /var/www/plugin-SimplePages-master.zip
 
 RUN curl -J -L -s -k \
     'https://github.com/CPHDH/SuperRss/archive/master.zip' \
