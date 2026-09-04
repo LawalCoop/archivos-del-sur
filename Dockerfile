@@ -38,6 +38,14 @@ RUN curl -J -L -s -k \
 &&  mv /var/www/html/themes/theme-curatescape-echo-2.0.7/curatescape-echo /var/www/html/themes/curatescape-echo \
 &&  rm -rf /var/www/theme-curatescape-echo.zip /var/www/html/themes/theme-curatescape-echo-2.0.7
 
+# collections/show.php builds the collection's featured-image array without an
+# 'alt' key (unlike custom.php's own item-image builder, which sets one), and
+# rl_gallery_figure() reads $image['alt'] unconditionally, so PHP 8+ raises an
+# "Undefined array key" warning on every collection page. Patch the helper to
+# check isset() first instead of forking the upstream file.
+RUN sed -i "s/\$alt = \$image\['alt'\] ?: \$image\['title'\];/\$alt = (isset(\$image['alt']) \&\& \$image['alt']) ? \$image['alt'] : \$image['title'];/" \
+    /var/www/html/themes/curatescape-echo/custom.php
+
 # Upstream theme (as of 2.0.7) only ships a de_DE translation catalog; add
 # Spanish so the public-facing site is fully translated. This site's Omeka
 # locale is "es" (Omeka core only ships es.mo/es_CO.mo, not es_ES.mo), so the
