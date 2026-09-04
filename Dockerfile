@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:8.4-apache
 
 RUN a2enmod rewrite
 
@@ -9,7 +9,6 @@ RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     unzip \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
-    libmcrypt-dev \
     libpng-dev \
     libjpeg-dev \
     libmemcached-dev \
@@ -17,9 +16,9 @@ RUN apt-get -qq update && apt-get -qq -y --no-install-recommends install \
     imagemagick
 
 # install the PHP extensions we need
-RUN docker-php-ext-install -j$(nproc) iconv mcrypt \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install -j$(nproc) \
     pdo pdo_mysql mysqli gd
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 
 RUN docker-php-ext-install exif && \
     docker-php-ext-enable exif
@@ -30,7 +29,7 @@ RUN curl -J -L -s -k \
 &&  unzip -q /var/www/omeka.zip -d /var/www/ \
 &&  rm /var/www/omeka.zip \
 &&  rm -rf /var/www/html \
-&&  mv /var/www/omeka-3.0.1 /var/www/html
+&&  mv /var/www/omeka-3.2.1 /var/www/html
 
 RUN curl -J -L -s -k \
     'https://github.com/CPHDH/theme-curatescape-echo/archive/refs/heads/master.zip' \
