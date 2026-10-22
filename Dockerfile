@@ -24,12 +24,12 @@ RUN docker-php-ext-install exif && \
     docker-php-ext-enable exif
 
 RUN curl -J -L -s -k \
-    'https://github.com/omeka/Omeka/releases/download/v3.2.1/omeka-3.2.1.zip' \
+    'https://github.com/omeka/Omeka/releases/download/v3.2.2/omeka-3.2.2.zip' \
     -o /var/www/omeka.zip \
 &&  unzip -q /var/www/omeka.zip -d /var/www/ \
 &&  rm /var/www/omeka.zip \
 &&  rm -rf /var/www/html \
-&&  mv /var/www/omeka-3.2.1 /var/www/html
+&&  mv /var/www/omeka-3.2.2 /var/www/html
 
 RUN curl -J -L -s -k \
     'https://github.com/CPHDH/theme-curatescape-echo/archive/refs/tags/2.0.7.zip' \
@@ -57,10 +57,10 @@ COPY ./translations/curatescape-echo/es.po ./translations/curatescape-echo/es.mo
 # 1.0.x absorbs CuratescapeJSON, CuratescapeAdminHelper, TourBuilder and SuperRss
 # (installing those alongside it causes the plugin to flag them as deprecated/conflicting)
 RUN curl -J -L -s -k \
-    'https://github.com/CPHDH/Curatescape/archive/refs/tags/1.0.12.zip' \
+    'https://github.com/CPHDH/Curatescape/archive/refs/tags/1.0.14.zip' \
     -o /var/www/Curatescape.zip \
 &&  unzip -q /var/www/Curatescape.zip -d /var/www/html/plugins/ \
-&&  mv /var/www/html/plugins/Curatescape-1.0.12 /var/www/html/plugins/Curatescape \
+&&  mv /var/www/html/plugins/Curatescape-1.0.14 /var/www/html/plugins/Curatescape \
 &&  rm /var/www/Curatescape.zip
 
 # Same locale-filename gap as the theme above: the plugin ships es_ES.mo but
