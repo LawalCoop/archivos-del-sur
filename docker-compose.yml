@@ -11,7 +11,7 @@ services:
       - mysql-data:/var/lib/mysql
 
   db_admin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     restart: always
     environment:
       PMA_HOST: db
@@ -19,7 +19,7 @@ services:
       PMA_PASSWORD: omeka
       UPLOAD_LIMIT: 300M
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
 
   omeka:
     # tu Dockerfile actual
