@@ -3,23 +3,12 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: omeka
-      MYSQL_DATABASE: omeka
-      MYSQL_USER: omeka
-      MYSQL_PASSWORD: omeka
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
-
-  db_admin:
-    image: phpmyadmin
-    restart: always
-    environment:
-      PMA_HOST: db
-      PMA_USER: omeka
-      PMA_PASSWORD: omeka
-      UPLOAD_LIMIT: 300M
-    ports:
-      - "127.0.0.1:8080:80"
 
   omeka:
     # tu Dockerfile actual
@@ -28,6 +17,10 @@ services:
     restart: always
     depends_on:
       - db
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     # sin puertos hacia afuera: sólo expone internamente
     volumes:
       - omeka-files:/var/www/html/files
